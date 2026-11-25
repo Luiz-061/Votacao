@@ -20,18 +20,22 @@ char exibir_candidato(char nome[][50],int n){
 
 int main() {
 	int opcao;
-	int votar;
-	int votos[5];
+	int votar = {0};
+	int votos[5] = {0};
 	char nome[5][50];
 	int qtd;
+
 	do{
-	    printf("Quantos querem se voluntariar a ser representante de 2 até 5: \n");
+		printf("Quantos querem se voluntariar a ser representante de 2 ate 5: \n");
 	    scanf("%d", &qtd);
 	    if(qtd < 2 || qtd > 5){
-	        printf("Numero maior do que permitido! Tente novamente!\n");
+			printf("Numero maior do que permitido! Tente novamente!\n");
 	    }
-	}while(qtd < 2 || qtd > 5);
+	}
+
+	while(qtd < 2 || qtd > 5);
 	cadastrar_candidato(nome, qtd);
+
 	do {
 		linha();
 		printf("BEM VINDO\n");
@@ -44,26 +48,42 @@ int main() {
 		printf("Escolha no menu: ");
 		scanf("%d", &opcao);
 		switch(opcao) {
-		case 1:
-			printf("Qual candidato deseja votar?\n");
-			exibir_candidato(nome, qtd);
-			printf("Votar no: ");
-			scanf("%d", &votar);
-			if(votar >= 1 && votar <= qtd){
-			    votos[qtd - 1]++;
-			    printf("Voto para o candidato %d- %s\n", votar, nome[votar - 1]);
-			}else {printf("Numero de voto invalido, tente novamente!");}
-			break;
-		case 2:
-			printf("Apurar\n");
-			break;
-		case 3:
-			printf("O representante é....\n");
-			break;
-		case 0:
-			printf("Saindo...");
-			break;
-		}
+
+			case 1:
+				
+				printf("Qual candidato deseja votar?\n");
+				exibir_candidato(nome, qtd);
+				printf("Votar no: ");
+				scanf("%d", &votar);
+				if(votar >= 1 && votar <= qtd){
+					votos[votar  - 1]++;
+					printf("Voto para o candidato %d- %s\n", votar, nome[votar - 1]);
+				}else {printf("Numero de voto invalido, tente novamente!");}
+				break;
+
+			case 2:
+
+				printf("Apurar\n");
+				int apuracao_candidato = 0;
+				
+				for(int i = 0; i < qtd; i++){
+					printf("%s: %d votos\n", nome[i], votos[i]);
+        			apuracao_candidato += votos[i];
+    			}
+
+				printf("o total de votos e: %d\n", apuracao_candidato);
+				break;
+
+			case 3:
+
+				printf("O representante e....\n");
+				break;
+
+			case 0:
+
+				printf("Saindo...");
+				break;
+			}
 	} while(opcao != 0);
 
 	return 0;
