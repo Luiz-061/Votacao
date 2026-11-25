@@ -1,0 +1,151 @@
+#include <stdio.h>
+
+#define NUM_CANDIDATOS 5
+#define TAM_NOME 30
+
+// Cadastra o nome de cada candidato (recebe a matriz de nomes)
+void cadastrar(char nomes[][TAM_NOME], int total_candidatos) {
+    int i;
+
+    printf("\n--- CADASTRO DE CANDIDATOS ---\n");
+    for (i = 0; i < total_candidatos; i++) {
+        printf("Nome do candidato %d: ", i + 1);
+        scanf(" %29[^\n]", nomes[i]);   // aceita nomes com espaco
+    }
+    printf("Candidatos cadastrados!\n");
+}
+
+// Mostra a lista de candidatos
+void listarCandidatos(char nomes[][TAM_NOME], int total_candidatos) {
+    int i;
+    for (i = 0; i < total_candidatos; i++) {
+        printf("%d - %s\n", i + 1, nomes[i]);
+    }
+}
+
+// Registra um voto usando o nome na tela
+void votar(int votos[], char nomes[][TAM_NOME], int total_candidatos) {
+    int opcao;
+
+    printf("\n--- VOTAR ---\n");
+    listarCandidatos(nomes, total_candidatos);
+    printf("Digite o numero do candidato: ");
+    scanf("%d", &opcao);
+
+    if (opcao >= 1 && opcao <= total_candidatos) {
+        votos[opcao - 1]++;
+        printf("Voto registrado para %s!\n", nomes[opcao - 1]);
+    } else {
+        printf("Candidato invalido! Voto nao computado.\n");
+    }
+}
+
+int apurar(int votos[], int total_candidatos) {
+    int i, soma = 0;
+    for (i = 0; i < total_candidatos; i++) {
+        soma += votos[i];
+    }
+    return soma;
+}
+
+void mostrarPercentuais(int votos[], char nomes[][TAM_NOME], int total_candidatos, int total_votos) {
+    int i;
+
+    printf("\n--- PERCENTUAIS ---\n");
+    if (total_votos == 0) {
+        printf("Nenhum voto registrado ainda.\n");
+        return;
+    }
+    for (i = 0; i < total_candidatos; i++) {
+        printf("%s: %d votos (%.2f%%)\n", nomes[i], votos[i], (votos[i] * 100.0) / total_votos);
+    }
+}
+
+void indicarVencedor(int votos[], char nomes[][TAM_NOME], int total_candidatos, int total_votos) {
+    int i, maior = votos[0], qtd_maior = 0, vencedor = 0;
+
+    if (total_votos == 0) {
+        printf("\nNenhum voto registrado, sem vencedor.\n");
+        return;
+    }
+
+    for (i = 1; i < total_candidatos; i++) {
+        if (votos[i] > maior) {
+            maior = votos[i];
+        }
+    }
+
+    for (i = 0; i < total_candidatos; i++) {
+        if (votos[i] == maior) {
+            qtd_maior++;
+            vencedor = i;
+        }
+    }
+
+    if (qtd_maior > 1) {
+        printf("\nEMPATE entre:");
+        for (i = 0; i < total_candidatos; i++) {
+            if (votos[i] == maior) {
+                printf(" %s;", nomes[i]);
+            }
+        }
+        printf(" (%d votos cada)\n", maior);
+    } else {
+        printf("\nVENCEDOR: %s com %d votos!\n", nomes[vencedor], maior);
+    }
+}
+
+int main() {
+    int votos[NUM_CANDIDATOS] = {0};
+    char nomes[NUM_CANDIDATOS][TAM_NOME];
+    int opcao, total_votos;
+    int cadastrado = 0;   // controla se ja cadastrou os candidatos
+
+    do {
+        printf("\n===== URNA ELETRONICA =====\n");
+        printf("1 - Cadastrar candidatos\n");
+        printf("2 - Votar\n");
+        printf("3 - Mostrar percentuais\n");
+        printf("4 - Indicar vencedor\n");
+        printf("0 - Sair\n");
+        printf("Escolha: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                cadastrar(nomes, NUM_CANDIDATOS);
+                cadastrado = 1;
+                break;
+            case 2:
+                if (cadastrado) {
+                    votar(votos, nomes, NUM_CANDIDATOS);
+                } else {
+                    printf("\nCadastre os candidatos primeiro (opcao 1)!\n");
+                }
+                break;
+            case 3:
+                if (cadastrado) {
+                    total_votos = apurar(votos, NUM_CANDIDATOS);
+                    mostrarPercentuais(votos, nomes, NUM_CANDIDATOS, total_votos);
+                } else {
+                    printf("\nCadastre os candidatos primeiro (opcao 1)!\n");
+                }
+                break;
+            case 4:
+                if (cadastrado) {
+                    total_votos = apurar(votos, NUM_CANDIDATOS);
+                    indicarVencedor(votos, nomes, NUM_CANDIDATOS, total_votos);
+                } else {
+                    printf("\nCadastre os candidatos primeiro (opcao 1)!\n");
+                }
+                break;
+            case 0:
+                printf("\nEncerrando o programa...\n");
+                break;
+            default:
+                printf("\nOpcao invalida! Tente novamente.\n");
+        }
+    } while (opcao != 0);
+
+    return 0;
+}
